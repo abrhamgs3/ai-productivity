@@ -12,7 +12,7 @@ Model inventory
 run_tfp_model          Baseline FE: ln_tfp ~ ln_ai + ln_hc (entity effects)
 run_growth_model       GDP growth: first-differenced ln_gdp (entity effects)
 run_robustness_suite   Baseline + two-way FE + trimmed + growth
-run_sensitivity_suite  Lagged AI + time cluster + placebo HC + Driscoll-Kraay
+run_sensitivity_suite  Lagged AI + time cluster + placebo HC + Driscoll-Kraay + AI_index levels
 run_falsification_suite Digital infra + innovation + reverse causality + coverage-restricted
 """
 
@@ -54,43 +54,18 @@ def _fit_model(
     time_effects: bool = False,
     cluster_entity: bool = True,
     cluster_time: bool = False,
-    label: str = "",
-):
-    """Fit a PanelOLS model and return the result.
-
-    Parameters
-    ----------
-    df:
-        Panel data (plain DataFrame or (country, year) MultiIndex).
-    dependent:
-        Name of the outcome column.
-    regressors:
-        List of regressor column names (constant is added automatically).
-    entity_effects / time_effects:
-        Whether to demean by entity and/or time.
-    cluster_entity / cluster_time:
-        Clustering dimensions for standard errors.
-    label:
-        Human-readable name for log messages.
-    """
+    label: str | None = None,
+) -> object:
+    """Fit a PanelOLS model and return the result."""
     panel_df = _to_panel(df)
     needed = [dependent] + list(regressors)
     model_df = panel_df[needed].dropna()
 
-    n_obs = len(model_df)
-    n_entities = model_df.index.get_level_values("country").nunique()
+    n_entities = model_df.index.get_level_values(0).nunique()
     log.info(
         "Fitting %s — %d obs, %d entities, regressors: %s",
-        label or dependent,
-        n_obs,
-        n_entities,
-        regressors,
+        label or dependent, len(model_df), n_entities, regressors,
     )
-
-    if n_obs < len(regressors) + 2:
-        raise ModelSpecificationError(
-            f"Model '{label}' has only {n_obs} observations for {len(regressors)} regressors."
-        )
 
     y = model_df[dependent]
     X = sm.add_constant(model_df[list(regressors)])
@@ -102,21 +77,32 @@ def _fit_model(
             time_effects=time_effects,
             drop_absorbed=True,
         )
-        result = model.fit(
-            cov_type="clustered",
-            cluster_entity=cluster_entity,
-            cluster_time=cluster_time,
-        )
+        cov_type = "clustered"
+        cov_kwargs: dict = {}
+        if cluster_entity and cluster_time:
+            cov_kwargs = {"cluster_entity": True, "cluster_time": True}
+        elif cluster_entity:
+            cov_kwargs = {"cluster_entity": True}
+        elif cluster_time:
+            cov_kwargs = {"cluster_time": True}
+        else:
+            cov_type = "robust"
+
+        result = model.fit(cov_type=cov_type, **cov_kwargs)
+
+        # Log the first regressor's coefficient for a quick sanity check
+        first = regressors[0]
+        if first in result.params:
+            log.info(
+                "  %s coef=%.4f  p=%.4f  nobs=%d",
+                first, result.params[first], result.pvalues[first], result.nobs,
+            )
+        return result
+
     except Exception as exc:
-        raise ModelSpecificationError(f"Estimation failed for '{label}': {exc}") from exc
-
-    ai_param = "ln_ai_l1" if dependent == "ln_tfp" and "ln_ai_l1" in regressors else "ln_ai"
-    coef = result.params.get(ai_param)
-    pval = result.pvalues.get(ai_param)
-    if coef is not None:
-        log.info("  %s coef=%.4f  p=%.4f  nobs=%d", ai_param, float(coef), float(pval), n_obs)
-
-    return result
+        raise ModelSpecificationError(
+            f"Model estimation failed for '{label or dependent}': {exc}"
+        ) from exc
 
 
 def _fit_driscoll_kraay(
@@ -125,10 +111,10 @@ def _fit_driscoll_kraay(
     regressors: list[str],
     *,
     entity_effects: bool = True,
-    time_effects: bool = True,
-    label: str = "",
-):
-    """Driscoll-Kraay standard errors (robust to cross-sectional and temporal dependence)."""
+    time_effects: bool = False,
+    label: str | None = None,
+) -> object:
+    """Fit with Driscoll-Kraay (kernel) standard errors."""
     panel_df = _to_panel(df)
     needed = [dependent] + list(regressors)
     model_df = panel_df[needed].dropna()
@@ -142,7 +128,9 @@ def _fit_driscoll_kraay(
         model = PanelOLS(y, X, entity_effects=entity_effects, time_effects=time_effects, drop_absorbed=True)
         return model.fit(cov_type="kernel", kernel="bartlett", bandwidth=2)
     except Exception as exc:
-        raise ModelSpecificationError(f"Driscoll-Kraay estimation failed for '{label}': {exc}") from exc
+        raise ModelSpecificationError(
+            f"Driscoll-Kraay estimation failed for '{label}': {exc}"
+        ) from exc
 
 
 # ---------------------------------------------------------------------------
@@ -151,7 +139,11 @@ def _fit_driscoll_kraay(
 
 def run_tfp_model(df: pd.DataFrame):
     """Baseline FE: ln_tfp ~ ln_ai + ln_hc with country fixed effects."""
-    return _fit_model(df, "ln_tfp", ["ln_ai", "ln_hc"], entity_effects=True, time_effects=False, label="baseline_tfp_fe")
+    return _fit_model(
+        df, "ln_tfp", ["ln_ai", "ln_hc"],
+        entity_effects=True, time_effects=False,
+        label="baseline_tfp_fe",
+    )
 
 
 def run_growth_model(df: pd.DataFrame):
@@ -159,7 +151,11 @@ def run_growth_model(df: pd.DataFrame):
     panel_df = _to_panel(df).copy()
     panel_df["gdp_growth"] = panel_df.groupby(level=0)["ln_gdp"].diff()
     log.info("Constructed gdp_growth (within-country first difference of ln_gdp)")
-    return _fit_model(panel_df, "gdp_growth", ["ln_ai", "ln_hc"], entity_effects=True, time_effects=False, label="growth_fe")
+    return _fit_model(
+        panel_df, "gdp_growth", ["ln_ai", "ln_hc"],
+        entity_effects=True, time_effects=False,
+        label="growth_fe",
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -171,13 +167,21 @@ def run_robustness_suite(df: pd.DataFrame) -> dict:
     log.info("Running robustness suite (4 models)")
 
     baseline = run_tfp_model(df)
-    twoway = _fit_model(df, "ln_tfp", ["ln_ai", "ln_hc"], entity_effects=True, time_effects=True, label="two_way_fe")
+    twoway = _fit_model(
+        df, "ln_tfp", ["ln_ai", "ln_hc"],
+        entity_effects=True, time_effects=True,
+        label="two_way_fe",
+    )
 
     panel_df = _to_panel(df).reset_index()
     low = panel_df["ln_ai"].quantile(0.01)
     high = panel_df["ln_ai"].quantile(0.99)
     trimmed = panel_df[(panel_df["ln_ai"] >= low) & (panel_df["ln_ai"] <= high)]
-    trimmed_res = _fit_model(trimmed, "ln_tfp", ["ln_ai", "ln_hc"], entity_effects=True, time_effects=False, label="trimmed_tfp_fe")
+    trimmed_res = _fit_model(
+        trimmed, "ln_tfp", ["ln_ai", "ln_hc"],
+        entity_effects=True, time_effects=False,
+        label="trimmed_tfp_fe",
+    )
 
     growth = run_growth_model(df)
 
@@ -190,14 +194,27 @@ def run_robustness_suite(df: pd.DataFrame) -> dict:
 
 
 def run_sensitivity_suite(df: pd.DataFrame) -> dict:
-    """Four sensitivity checks: lagged AI, time cluster, placebo HC, Driscoll-Kraay."""
-    log.info("Running sensitivity suite (4 models)")
+    """Five sensitivity checks: lagged AI, time cluster, placebo HC, Driscoll-Kraay, AI_index levels.
+
+    The last spec (ai_index_levels_fe) uses AI_index in levels (not log-transformed).
+    AI_index is a z-score composite, so its coefficient reads: a 1-SD increase in
+    AI readiness is associated with beta x 100% change in TFP. This spec uses the
+    broadest available sample since AI_index avoids the negative-value dropout that
+    log(ai_proxy_total) introduces for low-AI countries.
+    """
+    log.info("Running sensitivity suite (5 models)")
     panel_df = _to_panel(df).copy()
 
+    # Lagged AI (t-1)
     lagged = panel_df.reset_index().sort_values(["country", "year"]).reset_index(drop=True)
     lagged["ln_ai_l1"] = lagged.groupby("country")["ln_ai"].shift(1)
-    lagged_ai = _fit_model(lagged, "ln_tfp", ["ln_ai_l1", "ln_hc"], entity_effects=True, time_effects=True, label="lagged_ai_fe")
+    lagged_ai = _fit_model(
+        lagged, "ln_tfp", ["ln_ai_l1", "ln_hc"],
+        entity_effects=True, time_effects=True,
+        label="lagged_ai_fe",
+    )
 
+    # Time-clustered SE
     time_cluster = _fit_model(
         panel_df, "ln_tfp", ["ln_ai", "ln_hc"],
         entity_effects=True, time_effects=True,
@@ -205,14 +222,33 @@ def run_sensitivity_suite(df: pd.DataFrame) -> dict:
         label="time_cluster_fe",
     )
 
-    placebo_hc = _fit_model(panel_df, "ln_hc", ["ln_ai"], entity_effects=True, time_effects=True, label="placebo_hc_fe")
-    driscoll_kraay = _fit_driscoll_kraay(panel_df, "ln_tfp", ["ln_ai", "ln_hc"], entity_effects=True, time_effects=True, label="driscoll_kraay_fe")
+    # Placebo: ln_hc as dependent (should not respond to ln_ai)
+    placebo_hc = _fit_model(
+        panel_df, "ln_hc", ["ln_ai"],
+        entity_effects=True, time_effects=True,
+        label="placebo_hc_fe",
+    )
+
+    # Driscoll-Kraay (cross-sectional dependence robust)
+    driscoll_kraay = _fit_driscoll_kraay(
+        panel_df, "ln_tfp", ["ln_ai", "ln_hc"],
+        entity_effects=True, time_effects=True,
+        label="driscoll_kraay_fe",
+    )
+
+    # AI_index in levels — avoids log-of-z-score issue, broader sample
+    ai_index_levels = _fit_model(
+        panel_df, "ln_tfp", ["AI_index", "ln_hc"],
+        entity_effects=True, time_effects=True,
+        label="ai_index_levels_fe",
+    )
 
     return {
         "lagged_ai_fe": lagged_ai,
         "time_cluster_fe": time_cluster,
         "placebo_hc_fe": placebo_hc,
         "driscoll_kraay_fe": driscoll_kraay,
+        "ai_index_levels_fe": ai_index_levels,
     }
 
 
@@ -221,17 +257,29 @@ def run_falsification_suite(df: pd.DataFrame) -> dict:
     log.info("Running falsification suite (4 models)")
     panel_df = _to_panel(df).copy()
 
-    digital_infra = _fit_model(panel_df, "ln_tfp", ["digital_infra_index", "ln_hc"], entity_effects=True, time_effects=False, label="digital_infra_fe")
-    innovation = _fit_model(panel_df, "ln_tfp", ["innovation_index", "ln_hc"], entity_effects=True, time_effects=False, label="innovation_fe")
+    digital_infra = _fit_model(
+        panel_df, "ln_tfp", ["digital_infra_index", "ln_hc"],
+        entity_effects=True, time_effects=False,
+        label="digital_infra_fe",
+    )
+    innovation = _fit_model(
+        panel_df, "ln_tfp", ["innovation_index", "ln_hc"],
+        entity_effects=True, time_effects=False,
+        label="innovation_fe",
+    )
 
     reversed_df = panel_df.reset_index().sort_values(["country", "year"]).reset_index(drop=True)
     reversed_df["ln_tfp_l1"] = reversed_df.groupby("country")["ln_tfp"].shift(1)
-    reverse_causality = _fit_model(reversed_df, "ln_ai", ["ln_tfp_l1", "ln_hc"], entity_effects=True, time_effects=True, label="reverse_causality_fe")
+    reverse_causality = _fit_model(
+        reversed_df, "ln_ai", ["ln_tfp_l1", "ln_hc"],
+        entity_effects=True, time_effects=True,
+        label="reverse_causality_fe",
+    )
 
     panel_reset = panel_df.reset_index()
     coverage = panel_reset.groupby("country")["ln_ai"].apply(lambda s: s.notna().sum())
     covered = coverage[coverage >= 8].index
-    log.info("Coverage-restricted sample: %d countries with ≥8 years of AI data", len(covered))
+    log.info("Coverage-restricted sample: %d countries with >=8 years of AI data", len(covered))
     coverage_restricted = _fit_model(
         panel_reset[panel_reset["country"].isin(covered)],
         "ln_tfp", ["ln_ai", "ln_hc"],
