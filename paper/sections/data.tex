@@ -1,0 +1,23 @@
+\section{Data}
+
+\subsection{Data Sources and Integration}
+
+The empirical analysis uses a country-year panel assembled from public international datasets on macroeconomic outcomes, productivity, human capital, governance, and technology-related indicators. Core inputs come from the World Development Indicators (WDI), Worldwide Governance Indicators (WGI), and Penn World Table (PWT) systems \cite{worldbankWDI2024,kaufmannKraayMastruzzi2010,feenstraInklaarTimmer2015}. These sources are merged and harmonized using standardized country-year keys. The cleaned analytical file is stored at \texttt{data/processed/panel\_clean.csv}.
+
+The raw merged panel contains 266 distinct ``country'' labels drawn from World Bank sources. Of these, 49 are regional, income-group, or lending-group aggregates (e.g., ``World,'' ``High income,'' ``Sub-Saharan Africa,'' ``OECD members'') rather than countries, and a further 24 are non-sovereign territories or special administrative regions (e.g., Hong Kong SAR, Puerto Rico, Bermuda, Greenland, Kosovo, West Bank and Gaza) rather than independent states. Both groups are dropped prior to analysis: aggregates are sums or weighted averages of other rows and would distort percentile-based trimming thresholds, descriptive figures, and coverage statistics, while territories do not set independent macroeconomic policy and are not the unit of analysis implied by the country fixed-effects design. After these exclusions, the analytical panel contains 193 sovereign countries, 15 years, and 2,895 country-year rows -- consistent with standard counts of independent states. Because core variables are not fully observed across all country-year combinations, estimation samples are materially smaller and vary by specification.
+
+\subsection{Variable Construction}
+
+The main explanatory variable is a country-level proxy for AI adoption, transformed to logarithms where feasible. In the data extraction workflow, AI-related measures combine patent and intellectual-property indicators with digital infrastructure indicators (including secure servers and internet-use intensity) before model-ready construction \cite{worldbankWDI2024}. The primary outcome variable is log TFP from PWT; a secondary outcome is GDP growth, constructed as the within-country first difference of log GDP per capita. Human capital enters as a control variable in baseline and robustness specifications.
+
+Log transformations are used to stabilize scale and permit elasticity-style interpretation. Where composite AI indicators are used, variables are standardized and aggregated using principal-component logic \cite{jolliffeCadima2016}. These transformations also impose sample restrictions when raw values are missing or non-positive.
+
+\subsection{Data Validation and Reproducibility}
+
+Data quality is assessed through reproducible checks written to \texttt{tables/data\_validation\_report.json}. The validation stage verifies required columns, detects duplicate country-year rows, and reports missingness by variable. No duplicate country-year observations are detected in the cleaned panel. Missingness is, however, non-trivial for several variables, including core regressors, which implies that complete-case estimation relies on a selected subset of the full panel.
+
+This has two practical implications. First, sample size varies by model, so coefficient comparisons should be read with composition effects in mind. Second, external validity is stronger for countries with sustained statistical coverage and weaker for countries with sparse observations.
+
+\subsection{Measurement Limits}
+
+Two measurement concerns are central. The first is construct validity of the AI proxy, which may capture both AI-specific activity and broader digital intensity. The second is comparability of productivity statistics across countries with different statistical capacity. These issues motivate conservative interpretation and a broad sensitivity framework rather than single-model inference.

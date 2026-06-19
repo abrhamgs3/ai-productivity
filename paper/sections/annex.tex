@@ -1,0 +1,78 @@
+\clearpage
+\appendix
+\section{Annex: Additional Figures}
+
+\subsection{AI and TFP Scatter Plot}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{../figures/ai_tfp_scatter.png}
+\caption{Cross-country relationship between log AI adoption and log TFP.}
+\label{fig:annex_scatter}
+\end{figure}
+
+\subsection{Average AI and TFP Trends}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{../figures/ai_tfp_trend.png}
+\caption{Average log AI adoption and log TFP over time.}
+\label{fig:annex_trend}
+\end{figure}
+
+\subsection{AI Coefficient Comparison Across Models}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{../figures/ai_coef_comparison.png}
+\caption{AI coefficient estimates with 95\% confidence intervals across baseline, robustness, and sensitivity specifications.}
+\label{fig:annex_coef_compare}
+\end{figure}
+
+\subsection{Data Missingness Profile}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{../figures/missingness_profile.png}
+\caption{Top variables by count of missing observations in the merged panel before complete-case estimation.}
+\label{fig:annex_missingness}
+\end{figure}
+
+\clearpage
+\section{Annex: Full Regression Outputs}
+
+\subsection{Baseline TFP Fixed Effects}
+{\scriptsize
+\VerbatimInput{../tables/baseline_tfp_fe.txt}
+}
+
+\subsection{Two-Way Fixed Effects}
+{\scriptsize
+\VerbatimInput{../tables/two_way_fe.txt}
+}
+
+\subsection{Trimmed-Sample TFP Fixed Effects}
+{\scriptsize
+\VerbatimInput{../tables/trimmed_tfp_fe.txt}
+}
+
+\subsection{GDP Growth Fixed Effects}
+{\scriptsize
+\VerbatimInput{../tables/growth_fe.txt}
+}
+
+\subsection{Lagged AI Fixed Effects}
+{\scriptsize
+\VerbatimInput{../tables/lagged_ai_fe.txt}
+}
+
+\subsection{Time-Clustered Fixed Effects}
+{\scriptsize
+\VerbatimInput{../tables/time_cluster_fe.txt}
+}
+
+\subsection{Driscoll-Kraay Fixed Effects}
+{\scriptsize
+\VerbatimInput{../tables/driscoll_kraay_fe.txt}
+}
+
+\subsection{Placebo Outcome Fixed Effects}
+{\scriptsize
+\VerbatimInput{../tables/placebo_hc_fe.txt}
+}

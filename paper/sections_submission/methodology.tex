@@ -1,0 +1,45 @@
+\section{Methodology}
+
+\subsection{Empirical Objective and Estimands}
+
+The empirical objective is to estimate within-country associations between AI adoption and macroeconomic outcomes. The primary estimand is the partial association between log AI and log TFP conditional on country effects and human capital. A secondary estimand evaluates whether a comparable association appears in near-term GDP growth.
+
+\subsection{Baseline Model}
+
+We estimate:
+\[
+\ln(\mathrm{TFP}_{it}) = \alpha_i + \beta\ln(\mathrm{AI}_{it}) + \gamma\ln(\mathrm{HC}_{it}) + \varepsilon_{it},
+\]
+where $i$ indexes countries and $t$ indexes years. Country fixed effects absorb time-invariant heterogeneity. Baseline inference uses country-clustered standard errors.
+
+This design mitigates bias from persistent country characteristics but does not, by itself, remove all endogeneity concerns. In particular, time-varying omitted factors and reverse feedback from productivity to AI adoption remain plausible.
+
+\subsection{Growth Model}
+
+To assess macro transmission, we estimate GDP growth as the within-country first difference of log GDP per capita, regressed on AI and human capital controls.
+
+Because growth is a noisier macro outcome and requires differencing, we expect lower explanatory power and potentially smaller coefficient magnitudes relative to TFP models.
+
+\subsection{Robustness and Sensitivity}
+
+Robustness checks include two-way fixed effects and trimmed-sample estimation. Sensitivity checks include lagged AI, time-clustered inference, placebo outcomes, and Driscoll-Kraay standard errors to address broad cross-sectional dependence.
+
+The role of this portfolio is diagnostic rather than cosmetic. If the central AI coefficient changes sign or collapses under defensible alternatives, substantive claims should be revised downward. If the sign and approximate magnitude remain stable, confidence in empirical regularity increases, even when causal interpretation remains limited.
+
+\subsection{Assumptions and Inference Discipline}
+
+Interpretation relies on three assumptions: (i) model controls capture key confounders within the available data, (ii) remaining error dependence is adequately addressed by the chosen covariance estimators, and (iii) measurement error does not dominate signal. Because data-system comparability can vary across countries and indicators \cite{worldbank2021wdr,worldbankWDI2024}, we evaluate inference under multiple covariance structures and report all principal results in both compact and full-output formats.
+
+\subsection{Extended Falsification Checks}
+
+Beyond the pre-specified robustness portfolio, four falsification checks probe construct validity, timing, and sample composition. First, the composite AI index is decomposed into a digital-infrastructure sub-index (internet use, mobile subscriptions, secure servers) and an innovation/patent sub-index (resident and non-resident patent applications, IP receipts), each re-estimated in place of the baseline AI proxy. Second, a reverse-causality check regresses log AI adoption on one-period-lagged log TFP with country and year fixed effects. Third, the baseline model is re-estimated on the subset of countries with at least 8 of 15 years of non-missing AI data. Fourth, observable characteristics (log GDP per capita, log human capital, rule of law, government effectiveness) are compared between country-years with and without AI data.
+
+\subsection{Interpretation}
+
+Coefficients are interpreted as conditional associations. While stability across specifications increases confidence in empirical regularity, the design does not by itself establish definitive causal effects. The extended falsification checks (Section~6) further bound this interpretation: they indicate that the headline association reflects general digital-capacity diffusion rather than AI-specific activity, that timing cannot be attributed to AI adoption alone, and that the coverage-restricted sample is not representative of the full panel.
+
+\subsection{Pre-analysis Design and Decision Rules}
+
+To limit specification-search bias, the empirical sequence is fixed in advance: baseline FE estimation, robustness checks, then sensitivity checks. The baseline model defines the primary estimand; robustness models test whether core sign and magnitude survive defensible alternatives; sensitivity models test dependence on timing and covariance choices.
+
+Interpretive rules are explicit. Sign reversals in core robustness models lead to downgraded claims. Stable sign with moderate magnitude variation is interpreted as robust association evidence. Results that are isolated to one specification are labeled tentative rather than central findings. This rule-based approach improves transparency and keeps interpretation consistent with evidentiary strength.

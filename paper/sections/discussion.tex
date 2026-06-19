@@ -1,0 +1,60 @@
+\section{Discussion}
+
+The empirical pattern in this study is consistent with a two-step transmission mechanism: AI adoption first appears in measured productivity, and only later in broader growth outcomes. This interpretation aligns with prior arguments that technology diffusion requires complementary investments and organizational adaptation before full aggregate effects are realized \cite{brynjolfssonRockSyverson2019,brynjolfssonHitt2000}. Under this view, the stronger TFP association and smaller GDP growth association are not contradictory; they may reflect timing differences in adjustment, reallocation, and measurement.
+
+Before drawing policy implications, it is important to separate what is strongly supported by the estimates from what remains uncertain.
+
+\subsection{Interpretation of Effect Sizes}
+
+The estimated magnitudes should be interpreted as moderate. In macro panels, coefficients of the observed size are economically meaningful but not transformative on their own. This is important for policy interpretation: the results do not support claims that AI alone can close large development gaps in the short run. Rather, they suggest that AI may contribute incrementally to productivity performance when combined with complementary conditions.
+This interpretation is consistent with the cross-model coefficient profile shown in Annex Figure~\ref{fig:annex_coef_compare}, where point estimates remain positive but moderate in size across principal specifications.
+
+\subsection{Methodological Strengths}
+
+The analysis has three practical strengths: reproducible end-to-end implementation, a robustness portfolio that probes specification dependence, and a conservative inferential stance that separates stable association from causal interpretation. For transparency, complete specification-level outputs are reported in the ``Annex: Full Regression Outputs'' section, while visual model-comparison evidence is summarized in Annex Figure~\ref{fig:annex_coef_compare}.
+
+\subsection{Limitations}
+
+The study has several limitations that materially constrain causal interpretation.
+
+First, the identifying variation is observational. Even with fixed effects and multiple robustness checks, unobserved time-varying factors may remain correlated with both AI adoption and productivity outcomes.
+
+Second, reverse causality cannot be fully excluded, and the extended falsification check provides direct evidence that it is a live concern here: one-period-lagged log TFP is a positive and statistically significant predictor of current log AI adoption (Table~\ref{tab:falsification}). Countries with stronger prior productivity trajectories appear to have greater fiscal and institutional capacity to adopt AI and digital technologies, which can bias the baseline association upward and undermines a clean "AI leads TFP" timing interpretation of the lagged-AI sensitivity result.
+
+Third, measurement quality varies across countries and years, and the sub-index decomposition indicates this is more than a theoretical caveat: a digital-infrastructure-only sub-index (internet use, mobile subscriptions, secure servers) is positively and significantly associated with TFP, while an innovation/patent-only sub-index is not distinguishable from zero (Table~\ref{tab:falsification}). The AI proxy used here therefore appears to capture broader digital-infrastructure diffusion rather than AI-specific or innovation-intensive activity, and the paper's claims should be read at that level of generality.
+
+Fourth, complete-case estimation changes the effective sample across specifications. This improves within-model consistency but can reduce representativeness for countries with sparse data. The data-completeness concern is documented directly in Annex Figure~\ref{fig:annex_missingness}, which reports variable-level missingness before complete-case estimation. The coverage-restricted check (Table~\ref{tab:falsification}) shows the association survives in the subset of countries with sustained AI-data coverage, but Table~\ref{tab:sample-selection} shows that this subset is systematically richer, more human-capital-intensive, and better governed than the excluded majority, so robustness within this subset does not establish external validity beyond it.
+
+Accordingly, the estimates should be read as robust conditional associations under stated assumptions, not as definitive causal parameters.
+
+\subsection{Residual Threats to Identification}
+
+Several threats remain. Reverse causality is possible if productive economies adopt AI faster. Omitted variable bias may persist if time-varying national policies jointly influence AI diffusion and productivity trajectories. Measurement error in AI proxies may attenuate true coefficients or introduce noise that varies by country statistical capacity. Although two-way fixed effects and sensitivity checks reduce concern about some forms of bias, they do not fully eliminate these risks \cite{wooldridge2010,wooldridge2021}.
+
+\subsection{External Validity}
+
+Because estimation relies on complete-case subsets, results are most representative of countries and periods with stronger data continuity. The sample-selection comparison in Table~\ref{tab:sample-selection} makes this concrete: of the 193 countries in the cleaned panel, only 98 report AI data in at least one year, and the country-year observations with non-missing AI data have substantially higher mean log GDP per capita, log human capital, rule of law, and government effectiveness than the country-years without it. Caution is therefore warranted when extrapolating findings to lower-income, lower-capacity environments, which are precisely the settings where AI's productivity impact is least understood. A practical implication is that improving national statistical systems for digital and innovation indicators is itself a policy priority \cite{worldbank2021wdr,oecd2023ai}.
+
+\subsection{Policy Relevance}
+
+The evidence supports a cautious interpretive message. AI adoption appears most productive where complementary factors are present, including human capital formation, digital infrastructure, and institutional quality. At the same time, claims about immediate aggregate growth acceleration should remain provisional until supported by stronger causal designs and longer post-adoption panels.
+
+\subsection{Evidence-to-Policy Translation by Country Context}
+
+Because the estimated elasticities are moderate, policy interpretation is most useful when organized by implementation context rather than as a single global recommendation. A practical reading is that countries in early digital-transition stages should prioritize enabling conditions (reliable connectivity, secure digital infrastructure, and foundational skills) before expecting sizable productivity gains from AI-specific programs. Countries with stronger digital baselines can place greater emphasis on organizational adoption quality, applied managerial capability, and sector-specific deployment support.
+
+This context-dependent interpretation helps reconcile mixed findings in the literature. If adoption depth and complementary assets differ substantially across countries, average macro coefficients will naturally combine high-response and low-response environments. Under this view, the estimated mean effect is informative as a central tendency, but policy design should focus on shifting countries from low-complementarity to high-complementarity regimes.
+
+Operationally, this implies sequencing policy around three layers. The first layer is measurement capacity: improve data systems for AI use, digital infrastructure, and productivity outcomes to reduce informational uncertainty. The second layer is capability capacity: invest in skills and implementation support so firms and institutions can convert technology access into workflow-level gains. The third layer is diffusion capacity: support broad adoption beyond frontier firms so productivity effects are not confined to narrow segments of the economy. This staged framing keeps policy claims consistent with what the present estimates can and cannot establish.
+
+\subsection{Comparison with Related Studies}
+
+Our findings are broadly consistent with studies that report gradual and complementarity-dependent technology effects rather than instant macro transformation \cite{brynjolfssonHitt2000,brynjolfssonRockSyverson2019}. The positive but moderate TFP association in our panel aligns with that view. This is also consistent with policy syntheses emphasizing uneven readiness across countries and sectors \cite{oecd2023ai,imf2024}.
+
+At the same time, our results are more cautious than stronger claims of near-term aggregate growth acceleration. In our estimates, the GDP-growth association is smaller and less stable than the TFP association, which suggests timing frictions, adjustment costs, or measurement limits in cross-country macro panels. Relative to studies using firm-level or sector-specific data, this cross-country design likely captures broader institutional heterogeneity and slower diffusion dynamics.
+
+The implication is not that prior findings are contradicted, but that they are scale- and context-dependent. Micro evidence may detect earlier operational gains, while macro panel estimates, including ours, register diluted and delayed aggregate effects. This comparison reinforces the paper's main policy implication: AI strategy should be evaluated as part of a complementary capability bundle, not as a stand-alone short-run growth instrument.
+
+\subsection{Research Agenda}
+
+Future work should prioritize designs with stronger identification leverage, including quasi-experimental variation from policy shocks, infrastructure rollout, or differential exposure to global AI technology waves. Heterogeneity analysis by income level, sector structure, and governance capacity is also necessary to understand where observed productivity associations are strongest and why.

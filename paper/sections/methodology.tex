@@ -1,0 +1,103 @@
+\section{Methodology}
+
+\subsection{Empirical Objective and Estimands}
+
+The empirical objective is to estimate within-country associations between AI adoption and macroeconomic outcomes. The primary estimand is the partial association between log AI and log TFP conditional on country effects and human capital. A secondary estimand replaces TFP with GDP growth to assess near-term macro transmission.
+
+\subsection{Conceptual Framework}
+
+The paper is anchored in a simple complementarities view of technology diffusion: AI adoption can raise measured productivity when combined with implementation capacity, human capital, and organizational adjustment. In this interpretation, estimated coefficients capture reduced-form net associations that summarize multiple channels operating jointly in macro data.
+
+This conceptual framing motivates two expectations. First, TFP responses may appear before broader GDP growth effects. Second, coefficient magnitudes are likely moderate in annual country panels because adoption, reorganization, and diffusion are gradual.
+
+\subsection{Baseline Fixed-Effects Model}
+
+We estimate panel fixed-effects models of the form:
+
+\[
+\ln(\mathrm{TFP}_{it}) = \alpha_i + \beta \ln(\mathrm{AI}_{it}) + \gamma \ln(\mathrm{HC}_{it}) + \varepsilon_{it},
+\]
+
+where $i$ indexes countries and $t$ indexes years. Country fixed effects ($\alpha_i$) absorb time-invariant heterogeneity such as geography, long-run institutions, and structural sector composition. Standard errors are clustered at the country level in the baseline specification.
+
+\subsection{Growth Extension}
+
+To evaluate macro transmission, we estimate:
+
+\[
+\Delta \ln(\mathrm{GDP}_{it}) = \alpha_i + \beta_g \ln(\mathrm{AI}_{it}) + \gamma_g \ln(\mathrm{HC}_{it}) + u_{it},
+\]
+
+where $\Delta \ln(\mathrm{GDP}_{it})$ denotes within-country GDP-per-capita growth.
+
+\subsection{Robustness and Sensitivity}
+
+Robustness models are pre-specified as follows:
+
+\begin{enumerate}
+\item \textbf{Two-way fixed effects:} country and year fixed effects to absorb global shocks and common trends.
+\item \textbf{Trimmed sample:} exclusion of extreme AI observations (1st and 99th percentile thresholds) to limit outlier leverage.
+\item \textbf{Alternative outcome model:} GDP growth in place of TFP.
+\end{enumerate}
+
+Sensitivity checks include:
+
+\begin{enumerate}
+\item \textbf{Lagged AI model:} one-period lag of AI intensity to test temporal ordering.
+\item \textbf{Alternative clustering:} time-clustered standard errors under two-way fixed effects.
+\item \textbf{Cross-sectional dependence robust inference:} Driscoll-Kraay standard errors under two-way fixed effects.
+\item \textbf{Placebo outcome:} human capital as dependent variable, where strong contemporaneous AI effects are less theoretically central.
+\end{enumerate}
+
+All models are estimated in a single reproducible pipeline, and outputs are exported to machine-readable and LaTeX-ready tables.
+
+\subsection{Extended Falsification Checks}
+
+Beyond the pre-specified robustness and sensitivity portfolio, four additional checks directly target the construct-validity and identification concerns raised in Section~\ref{sec:interpretation-and-limits}.
+
+\begin{enumerate}
+\item \textbf{Digital-infrastructure sub-index:} the AI composite is replaced with a sub-index built only from internet-use, mobile-subscription, and secure-server indicators (each standardized and averaged). If this sub-index alone reproduces the baseline association, the result may reflect general digital diffusion rather than AI-specific activity.
+\item \textbf{Innovation sub-index:} the AI composite is replaced with a sub-index built only from resident and non-resident patent applications and IP receipts (each standardized and averaged), isolating the innovation-intensive component of the original proxy.
+\item \textbf{Reverse-causality check:} log AI adoption is regressed on one-period-lagged log TFP (with country and year fixed effects), testing whether prior productivity predicts subsequent AI adoption -- the mirror image of the lagged-AI sensitivity check.
+\item \textbf{Coverage-restricted sample:} the baseline specification is re-estimated on the subset of countries with at least 8 of 15 years of non-missing AI data, addressing concern that the baseline result is driven by a small, arbitrarily selected set of country-years.
+\end{enumerate}
+
+In addition, country-years are split into those with and without non-missing AI data, and compared on log GDP per capita, log human capital, population, and governance indicators (rule of law and government effectiveness) to characterize whether AI-data availability is itself selective.
+
+\subsection{Interpretation and Limits}
+\label{sec:interpretation-and-limits}
+
+Coefficients are interpreted as conditional associations. Causal interpretation would require stronger assumptions than those established here, particularly regarding the absence of unobserved time-varying confounders correlated with both AI adoption and productivity dynamics. The robustness portfolio provides evidence on stability, not proof of exogeneity.
+
+Potential threats include reverse causality (more productive countries adopt AI faster), omitted policies (industrial, education, or digital strategies), and measurement error in AI intensity. Cross-country data-system comparability may also vary by indicator family and statistical capacity \cite{worldbank2021wdr,worldbankWDI2024}. The methodological stance is therefore explicit and conservative: identify regularities that remain stable across defensible specifications, and report residual uncertainty directly.
+
+\subsection{Identification Strategy (Practical Scope)}
+
+Identification relies on within-country variation after absorbing time-invariant heterogeneity via country fixed effects, and, in two-way specifications, common time shocks via year fixed effects. This design reduces bias from persistent structural differences and global period shocks.
+
+The remaining concern is unobserved country-specific time-varying confounding. For that reason, results are interpreted as robust conditional associations rather than structural causal effects. Robustness checks are used as stress tests of stability, not as substitutes for external exogenous variation.
+
+\subsection{Scope Positioning}
+
+The empirical strategy in this manuscript is intentionally compact. The objective is to deliver a clear baseline evidence paper with explicit estimands, reproducible implementation, and practical robustness checks that are standard in applied macro panel work.
+
+Accordingly, diagnostics-heavy extensions (for example, expanded falsification architectures and family-wise multiplicity control frameworks) are not treated as this paper's core novelty claim. This separation keeps contribution boundaries clear and avoids conflating baseline empirical evidence with technical methodological expansion.
+
+\subsection{Pre-analysis Design and Decision Rules}
+
+To improve transparency and reduce specification-search risk, estimation follows a pre-declared sequence. First, the baseline fixed-effects model is treated as the anchor estimand. Second, robustness models (two-way fixed effects and trimmed samples) are used to test stability of sign and broad magnitude. Third, sensitivity models (lagged AI, alternative covariance choices, and placebo outcomes) are used to evaluate timing and inference dependence.
+
+Interpretive decisions follow simple rules. If sign reversals occur in core robustness models, substantive claims are downgraded. If sign stability persists with moderate magnitude variation, the result is reported as a robust conditional association. If a result appears only under one inference structure or one narrow sample, it is treated as tentative. These rules are intentionally conservative and are applied symmetrically to significant and non-significant outputs.
+
+This design does not convert observational estimates into causal effects, but it improves evidentiary discipline by making decision criteria explicit before narrative interpretation.
+
+\subsection{State-of-the-Art Extensions for Next Iteration}
+
+Given current data coverage, several frontier methods are feasible in follow-up work.
+
+\begin{enumerate}
+\item \textbf{Interactive fixed effects:} allow latent common factors with heterogeneous loadings across countries, reducing bias from unobserved global shocks \cite{bai2009}.
+\item \textbf{Staggered-adoption DiD designs:} if treatment timing can be defined from AI adoption thresholds, modern estimators can improve causal interpretation under heterogeneous effects \cite{callaway2021}.
+\item \textbf{Double/debiased machine learning:} flexibly model high-dimensional controls and nonlinear nuisance functions while preserving valid inference for target parameters \cite{chernozhukov2018}.
+\item \textbf{Dynamic panel estimators:} incorporate persistence and potential endogeneity using GMM-style instruments where panel depth allows it.
+\end{enumerate}

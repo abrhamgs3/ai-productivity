@@ -1,0 +1,67 @@
+\section{Results}
+
+\subsection{Main Findings}
+\input{sections/results_auto}
+
+For transparency, model outputs are stored in the \texttt{tables/} directory and generated directly from the estimation pipeline. The baseline fixed-effects model uses 364 observations; other specifications differ in sample size because of missing-data patterns and transformation requirements.
+
+\subsection{Baseline Magnitude and Precision}
+
+The baseline country fixed-effects estimate implies that a 1\% increase in AI adoption is associated with approximately a 0.025\% increase in TFP (standard error: 0.005; p-value below 0.001). In elasticity terms, the point estimate is modest but precisely estimated in the available sample. This pattern is consistent with incremental productivity gains rather than immediate step changes in aggregate output.
+
+In contrast, the GDP growth model reports a smaller coefficient (0.004, p-value 0.023). The sign remains positive, but the lower magnitude and lower within-model explanatory power suggest that productivity channels may precede broad growth responses, or that growth effects diffuse more slowly through the macroeconomy.
+
+\subsection{Robustness}
+Table~\ref{tab:robustness} compares the AI coefficient across baseline and robustness specifications.
+
+\begin{table}[h!]
+\centering
+\caption{Robustness Summary Across Model Specifications}
+\label{tab:robustness}
+\input{../tables/robustness_summary}
+\end{table}
+
+Three patterns from Table~\ref{tab:robustness} are notable. First, the AI coefficient remains positive across all TFP-focused models. Second, moving from country fixed effects to two-way fixed effects lowers the point estimate from approximately 0.025 to 0.018, indicating that common time shocks explain part, but not all, of the baseline association. Third, trimming extreme AI values yields an estimate (0.023) close to baseline, suggesting that the core result is not driven by a small set of high-leverage observations.
+
+Model comparison nonetheless requires caution because each specification can rely on a different complete-case sample. The persistence of sign and significance across alternatives is informative, but it does not remove concern about residual omitted-variable bias.
+
+\subsection{Sensitivity Checks}
+
+Sensitivity tests are reported in Table~\ref{tab:sensitivity}. The lagged AI model reports a positive coefficient of 0.014 (p-value 0.047), consistent with the hypothesis that AI intensity is associated with subsequent, not only contemporaneous, productivity outcomes. The time-clustered inference specification yields a positive estimate close to the two-way fixed-effects coefficient (0.018, p-value 0.009), indicating that baseline inference is not solely an artifact of clustering choice.
+
+\begin{table}[h!]
+\centering
+\caption{Sensitivity Checks: Lag, Clustering, and Placebo Outcome}
+\label{tab:sensitivity}
+\input{../tables/sensitivity_summary}
+\end{table}
+
+The placebo outcome model uses human capital as the dependent variable and estimates an AI coefficient of 0.011 with p-value 0.147. This lack of conventional statistical significance is directionally useful as a falsification check, though it should not be over-interpreted as a formal exclusion restriction.
+
+\subsection{Extended Falsification Checks}
+
+\input{sections/falsification_auto}
+
+\begin{table}[h!]
+\centering
+\caption{Extended Falsification Checks}
+\label{tab:falsification}
+\input{../tables/falsification_summary}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\caption{Country-Years With vs. Without AI Data: Observable Characteristics}
+\label{tab:sample-selection}
+\input{../tables/sample_selection_comparison}
+\end{table}
+
+These checks materially qualify the headline interpretation. The digital-infrastructure sub-index is positively and significantly associated with TFP, while the innovation/patent sub-index is not distinguishable from zero. This indicates that the baseline AI-TFP association is driven primarily by general digital-infrastructure diffusion rather than by AI-specific or innovation-intensive activity, and the paper's claims are framed accordingly. The reverse-causality check finds that lagged TFP is itself a positive and significant predictor of current AI adoption, which means the lagged-AI sensitivity result cannot be read as clean evidence that AI adoption leads TFP; the two results together are consistent with co-movement or reverse dynamics rather than one-directional timing. Finally, the coverage-restricted estimate remains positive and significant, so the headline result is not an artifact of the smallest complete-case samples -- but Table~\ref{tab:sample-selection} shows that countries with AI data are systematically richer, more human-capital-intensive, and better governed than countries without it, so this robustness should not be read as evidence of broad external validity.
+
+\subsection{Visual Evidence and Descriptive Alignment}
+
+Annex Figure~\ref{fig:annex_scatter} shows a positive cross-sectional relationship between log AI and log TFP in the observed data. Annex Figure~\ref{fig:annex_trend} shows that average AI intensity and TFP both trend upward over time. These descriptive patterns are consistent with the regression results, but they are not independently causal evidence.
+
+\subsection{Synthesis}
+
+Taken together, the evidence supports three conservative conclusions, each qualified by the extended falsification checks above. First, the composite AI/digital index is consistently positively associated with TFP within countries over time, but decomposition indicates this association is carried by the digital-infrastructure component rather than the innovation/patent component, so the result is better described as a digital-capacity association than an AI-specific one. Second, effect sizes are moderate rather than extreme, which is plausible in macro data where structural adjustment is gradual. Third, associations with contemporaneous GDP growth are positive but smaller, consistent with lagged transmission or short-run adjustment frictions -- though the reverse-causality check means this timing pattern should not be read as one-directional.

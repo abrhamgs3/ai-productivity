@@ -1,0 +1,65 @@
+\section{Results}
+
+Baseline estimates indicate that a 1 percent increase in AI adoption is associated with approximately a 0.025 percent increase in TFP (p-value below 0.001), controlling for human capital. This result remains positive under two-way fixed effects and trimmed-sample estimation.
+
+The baseline effect size is moderate but precise. In macro panel settings, this magnitude is economically relevant without implying abrupt aggregate transformation. The estimate is therefore consistent with incremental productivity improvements rather than immediate structural breaks.
+
+The GDP growth model reports a smaller positive coefficient (approximately 0.004), suggesting that productivity associations may emerge more clearly than near-term aggregate growth effects.
+
+This difference between TFP and growth models is substantively important. TFP can respond relatively quickly to efficiency gains, while aggregate growth may reflect slower reallocation channels and broader macro adjustment dynamics.
+
+Sensitivity checks support directional stability. The lagged-AI coefficient remains positive, time-clustered inference does not overturn significance, and Driscoll-Kraay standard errors preserve a positive and statistically significant AI coefficient. A placebo model with human capital as the dependent variable is not statistically significant at conventional thresholds.
+
+Taken jointly, these checks indicate that the central finding is not driven by a single covariance choice or one narrow model variant. At the same time, sensitivity stability should not be conflated with full causal identification; robustness narrows uncertainty but does not eliminate it.
+
+Table~\ref{tab:robustness_sub} reports compact robustness estimates, and Table~\ref{tab:sensitivity_sub} reports sensitivity estimates.
+
+\begin{table}[H]
+\centering
+\caption{Robustness Estimates for AI Coefficients Across Core Specifications}
+\label{tab:robustness_sub}
+\input{../tables/robustness_summary}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Sensitivity Estimates Under Alternative Timing and Inference Assumptions}
+\label{tab:sensitivity_sub}
+\input{../tables/sensitivity_summary}
+\end{table}
+
+The compact presentation in Tables~\ref{tab:robustness_sub} and \ref{tab:sensitivity_sub} is intended for main-text readability. Full model summaries are provided in the online appendix to ensure reproducibility and complete reporting.
+
+\subsection{Sample Composition and Comparability}
+
+An important consideration for interpretation is that model samples are not identical. The merged panel has broad raw coverage, but complete-case estimation for TFP, growth, lagged models, and alternative covariance structures yields different effective observation sets. This is expected in multi-source macro panels and should be interpreted as a data feature rather than a modeling error.
+
+For this reason, cross-specification comparison in this paper emphasizes directional stability and order of magnitude rather than exact coefficient equality across all models. The key empirical result is that the AI-TFP coefficient remains positive under all principal specifications tested, including stricter covariance assumptions.
+
+The growth specification remains informative despite smaller effect size. A lower growth coefficient is consistent with the possibility that AI-related productivity gains propagate gradually into broader macro outcomes through investment, reallocation, and institutional adjustment channels.
+
+\subsection{Extended Falsification Checks}
+
+\input{sections/falsification_auto}
+
+\begin{table}[H]
+\centering
+\caption{Extended Falsification Checks}
+\label{tab:falsification}
+\input{../tables/falsification_summary}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Country-Years With vs. Without AI Data: Observable Characteristics}
+\label{tab:sample-selection}
+\input{../tables/sample_selection_comparison}
+\end{table}
+
+These checks materially qualify the headline interpretation. The digital-infrastructure sub-index is positively and significantly associated with TFP, while the innovation/patent sub-index is not, indicating the baseline AI-TFP association reflects general digital-capacity diffusion rather than AI-specific or innovation-intensive activity. The reverse-causality check finds that lagged TFP positively and significantly predicts current AI adoption, so the lagged-AI sensitivity result above should not be read as one-directional evidence that AI leads TFP. The coverage-restricted estimate remains positive and significant, but Table~\ref{tab:sample-selection} shows that countries with AI data are systematically richer, more human-capital-intensive, and better governed than those without, so this robustness does not establish broad external validity.
+
+\subsection{What the Main Result Does and Does Not Establish}
+
+The evidence establishes a robust empirical regularity in the available data: countries tend to exhibit higher TFP in periods with higher measured AI intensity, conditional on controls and fixed effects. The analysis does not establish a single structural mechanism or a definitive treatment effect under exogenous variation.
+
+This distinction is central to the manuscript's inferential discipline. The value of the result lies in stability across transparent alternatives, while causal interpretation remains bounded by observational design limits discussed in Section 6.
