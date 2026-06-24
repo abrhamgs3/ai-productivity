@@ -1,0 +1,278 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ai-productivity/provenance/run_metadata/v1",
+  "title": "AI & Productivity Pipeline — Run Provenance Metadata",
+  "description": "Reproducibility record for a single pipeline execution. Written by src/ai_productivity/provenance.py. Does not alter any scientific output.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "run_id",
+    "timestamp_utc",
+    "runtime_seconds",
+    "exit_status",
+    "git",
+    "python",
+    "platform",
+    "packages",
+    "config",
+    "inputs",
+    "outputs"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semver for this metadata format. Minor bump = new optional keys. Major bump = breaking change.",
+      "example": "1.0.0"
+    },
+    "run_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID4 uniquely identifying this execution."
+    },
+    "timestamp_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC start time of the run (wall clock)."
+    },
+    "runtime_seconds": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Wall-clock duration in seconds. null when the run did not complete normally."
+    },
+    "exit_status": {
+      "type": "string",
+      "description": "'success' or 'error: <ExceptionType>' when the wrapped callable raised.",
+      "examples": [
+        "success",
+        "error: ValueError"
+      ]
+    },
+    "git": {
+      "type": "object",
+      "description": "State of the git repository at execution time.",
+      "required": [
+        "commit",
+        "branch",
+        "dirty",
+        "tags"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "commit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Full 40-character SHA-1 commit hash. null outside a git repo."
+        },
+        "branch": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Current branch name. 'HEAD' when detached."
+        },
+        "dirty": {
+          "type": "boolean",
+          "description": "True when 'git status --porcelain' returns non-empty output (uncommitted changes)."
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tags pointing at this commit. Empty list when none."
+        }
+      }
+    },
+    "python": {
+      "type": "object",
+      "description": "Python interpreter details.",
+      "required": [
+        "version",
+        "implementation",
+        "executable"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "e.g. '3.11.9'",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "implementation": {
+          "type": "string",
+          "description": "'CPython', 'PyPy', etc."
+        },
+        "executable": {
+          "type": "string",
+          "description": "Absolute path to the Python interpreter."
+        }
+      }
+    },
+    "platform": {
+      "type": "object",
+      "description": "Operating system and hardware.",
+      "required": [
+        "system",
+        "release",
+        "machine",
+        "node_hash"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "system": {
+          "type": "string",
+          "description": "e.g. 'Linux', 'Windows', 'Darwin'."
+        },
+        "release": {
+          "type": "string",
+          "description": "OS release string."
+        },
+        "machine": {
+          "type": "string",
+          "description": "Hardware type, e.g. 'x86_64', 'arm64'."
+        },
+        "node_hash": {
+          "type": "string",
+          "description": "First 12 hex characters of SHA-256(hostname). Allows within-lab identification without exposing the hostname externally."
+        }
+      }
+    },
+    "packages": {
+      "type": "object",
+      "description": "Installed version of every package in TRACKED_PACKAGES (src/ai_productivity/provenance.py). Value is null when the package is not installed.",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "examples": [
+        {
+          "pandas": "2.3.3",
+          "numpy": "2.2.6",
+          "scipy": "1.15.3",
+          "statsmodels": "0.14.6",
+          "linearmodels": "7.0",
+          "scikit-learn": null,
+          "matplotlib": "3.10.9"
+        }
+      ]
+    },
+    "config": {
+      "description": "Configuration file used by the pipeline. null when no config_path was supplied.",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "path",
+            "sha256",
+            "content_preview"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Relative or absolute path to the config file."
+            },
+            "sha256": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "SHA-256 of the config file at run time. null if unreadable."
+            },
+            "content_preview": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "First 512 characters of the config file, for quick inspection."
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "inputs": {
+      "type": "array",
+      "description": "Input datasets recorded before the pipeline runs.",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "sha256",
+          "size_bytes",
+          "mtime_utc"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "SHA-256 hex digest. null if path did not exist."
+          },
+          "size_bytes": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "File size. null if path did not exist."
+          },
+          "mtime_utc": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Last-modified time (UTC ISO-8601). null if path did not exist."
+          },
+          "warning": {
+            "type": "string",
+            "description": "Present only when the path did not exist at record time."
+          }
+        }
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "description": "All files found recursively in output_dirs after the pipeline completes. Sorted by path for stable diffs across runs.",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "sha256",
+          "size_bytes"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "SHA-256 hex digest."
+          },
+          "size_bytes": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}

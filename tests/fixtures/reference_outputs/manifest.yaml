@@ -1,0 +1,144 @@
+# =============================================================================
+# Sprint 2 — Reference Output Manifest
+# tests/fixtures/reference_outputs/manifest.yaml
+#
+# Ground truth artifact registry for the AI & Productivity research pipeline.
+# Captured 2026-06-23 from refactor-platform branch before Sprint 3+ changes.
+#
+# Provenance groups
+# -----------------
+# A  src/ai_productivity/pipeline.py run()   produced 2026-06-21
+# B  scripts/ numbered ad-hoc scripts        produced 2026-03-11
+# C  Intermediate data required for reproducibility
+# =============================================================================
+
+sprint: 2
+captured_date: "2026-06-23"
+input_data: "data/processed/panel_clean.csv"
+input_sha256: "9a65183a5406c76be2ba840faacbef673aa1b09604a1d61b8fe29c34415ebe44"
+input_rows: 2895
+input_countries: 193
+input_years: [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
+random_seed: 42
+
+anomalies:
+  - id: ANOM-01
+    severity: scientific
+    description: >
+      tables/pwt_only_fe.txt and tables/solow_excl_fe.txt are byte-identical
+      (SHA256 891ce892...). Both filter tfp_solow_flag==0 with identical regressors
+      and FE structure. pwt_only_fe is from run_sensitivity_suite();
+      solow_excl_fe is from run_heterogeneity_suite(). The two slots were intended
+      to represent different checks but produce the same result. Must be resolved
+      before Sprint 3.
+    files: ["tables/pwt_only_fe.txt", "tables/solow_excl_fe.txt"]
+
+  - id: ANOM-02
+    severity: provenance
+    description: >
+      tables/tfp_regression.txt was produced by scripts/04_regressions.py on an
+      older dataset (364 observations, 61 entities). Current panel_clean.csv has
+      2895 rows / 193 countries. Not reproducible from current data.
+    files: ["tables/tfp_regression.txt"]
+
+  - id: ANOM-03
+    severity: provenance
+    description: >
+      tables/summary_stats.tex was produced by scripts/07_tables.py on a dataset
+      state from 2026-03-11. Row counts (ln_ai=692, ln_tfp=1020) do not match
+      current panel_clean.csv. Not reproducible from current data.
+    files: ["tables/summary_stats.tex"]
+
+  - id: ANOM-04
+    severity: ambiguity
+    description: >
+      figures/ai_tfp_trend.png can be produced by two different code paths.
+      Path 1 (current): src/ai_productivity/visualization/figures.py ai_tfp_trend()
+      -- dual-axis, Times font, publication style, also writes .pdf.
+      Path 2: scripts/06_figures.py -- single axis, default matplotlib style,
+      .png only. The two outputs are visually and bytes-different. Current artifact
+      is from Path 1.
+    files: ["figures/ai_tfp_trend.png", "figures/ai_tfp_trend.pdf"]
+
+  - id: ANOM-05
+    severity: gap
+    description: >
+      run_pipeline.py does NOT call run_heterogeneity_suite(). The 7 heterogeneity
+      model summaries and heterogeneity_summary.csv/.tex were produced by
+      src/ai_productivity/pipeline.py run(). run_pipeline.py cannot reproduce the
+      full published artifact set. Resolution required before Sprint 3.
+    files:
+      - "tables/pre_2020_fe.txt"
+      - "tables/post_2020_fe.txt"
+      - "tables/covid_interact_fe.txt"
+      - "tables/post_chatgpt_fe.txt"
+      - "tables/no_covid_fe.txt"
+      - "tables/solow_excl_fe.txt"
+      - "tables/ai_hc_interact_fe.txt"
+      - "tables/heterogeneity_summary.csv"
+      - "tables/heterogeneity_summary.tex"
+
+artifacts:
+
+  # GROUP A -- robustness suite model summaries
+  - {filename: "tables/baseline_tfp_fe.txt",         group: A, type: model_summary, suite: robustness,    model_key: baseline_tfp_fe,         order: 7,  producer: run_robustness_suite,    n_obs: 1545, n_entities: 126, sha256: "8e637dcb76e62483c3ba606ab7a6d2fb2f6f2b32ba3d370526d57577f645d9ee", spec: "ln_tfp~ln_ai+ln_hc|entity FE|clustered SE",             description: "Baseline entity-FE. Primary published result."}
+  - {filename: "tables/two_way_fe.txt",              group: A, type: model_summary, suite: robustness,    model_key: two_way_fe,               order: 7,  producer: run_robustness_suite,    sha256: "9f09e9a94ee19fd1847947ac94e5419d6dc8bd7ad3983db4a8e7ab6034c0ae7b", spec: "ln_tfp~ln_ai+ln_hc|entity+time FE|clustered SE",       description: "Two-way FE. Main robustness check."}
+  - {filename: "tables/trimmed_tfp_fe.txt",          group: A, type: model_summary, suite: robustness,    model_key: trimmed_tfp_fe,          order: 7,  producer: run_robustness_suite,    sha256: "3e419daf254a2b692256cfdf4fb1ded1a7d50a985ff6767909a5512e12644ddd", spec: "ln_tfp~ln_ai+ln_hc|entity FE|ln_ai trimmed p1-p99",    description: "Trimmed sample. Outlier sensitivity check."}
+  - {filename: "tables/growth_fe.txt",               group: A, type: model_summary, suite: robustness,    model_key: growth_fe,                order: 7,  producer: run_robustness_suite,    sha256: "c0683b50fcbc8da812d8cc4e7d6a52a7a158975501797f92f7772aa35fed8be6", spec: "delta_ln_gdp~ln_ai+ln_hc|entity FE|clustered SE",       description: "GDP growth outcome. Macro check."}
+
+  # GROUP A -- sensitivity suite model summaries
+  - {filename: "tables/lagged_ai_fe.txt",            group: A, type: model_summary, suite: sensitivity,   model_key: lagged_ai_fe,            order: 7,  producer: run_sensitivity_suite,   sha256: "7f876c0c026579513ad42adbc7bb74c06b373ff967097e354d14d85956047472", spec: "ln_tfp~ln_ai_l1+ln_hc|entity+time FE",                description: "AI lagged t-1. Addresses contemporaneous endogeneity."}
+  - {filename: "tables/time_cluster_fe.txt",         group: A, type: model_summary, suite: sensitivity,   model_key: time_cluster_fe,         order: 7,  producer: run_sensitivity_suite,   sha256: "1fb685a858018c4b14afd39ca0e782c50ec16cb140674d445749ae8a15db40be", spec: "ln_tfp~ln_ai+ln_hc|entity+time FE|time-clustered SE",  description: "SE clustered by year instead of entity."}
+  - {filename: "tables/placebo_hc_fe.txt",           group: A, type: model_summary, suite: sensitivity,   model_key: placebo_hc_fe,           order: 7,  producer: run_sensitivity_suite,   sha256: "0015f3308f88bef28d25eea98e2363f3f8bc78fc0f381dca4f12c1d42413d14c", spec: "ln_hc~ln_ai|entity+time FE",                           description: "Placebo outcome. Should yield near-zero coef."}
+  - {filename: "tables/driscoll_kraay_fe.txt",       group: A, type: model_summary, suite: sensitivity,   model_key: driscoll_kraay_fe,       order: 7,  producer: run_sensitivity_suite,   sha256: "3ff2e407bc1aeea16290eb661a99622cc4899c7fde1aec29e798b4396c69d887", spec: "ln_tfp~ln_ai+ln_hc|entity+time FE|Driscoll-Kraay SE",  description: "Driscoll-Kraay SE. Robust to cross-sectional dependence."}
+  - {filename: "tables/ai_index_levels_fe.txt",      group: A, type: model_summary, suite: sensitivity,   model_key: ai_index_levels_fe,      order: 7,  producer: run_sensitivity_suite,   sha256: "0ec52b975c7642a5ec73d437558a5925b8c44165b6b1342f970bf70e6914df94", spec: "ln_tfp~AI_index+ln_hc|entity+time FE",                 description: "AI_index in levels (z-score). Broader sample than log spec."}
+  - {filename: "tables/pwt_only_fe.txt",             group: A, type: model_summary, suite: sensitivity,   model_key: pwt_only_fe,             order: 7,  producer: run_sensitivity_suite,   sha256: "891ce892fb23d1122293d849ae583fe2515cb9447e1eadf2b528b7fd94d42bf7", spec: "ln_tfp~ln_ai+ln_hc|entity+time FE|tfp_solow_flag==0",  description: "PWT-only TFP. IDENTICAL to solow_excl_fe.txt (ANOM-01).", anomaly: ANOM-01}
+
+  # GROUP A -- falsification suite model summaries
+  - {filename: "tables/digital_infra_fe.txt",        group: A, type: model_summary, suite: falsification, model_key: digital_infra_fe,        order: 8,  producer: run_falsification_suite, n_obs: 2053, sha256: "60fde2bc7237a6f5a80233297d77ac45f5fc9b0b1cf3bd0fc1c233d5332aa8ec", spec: "ln_tfp~digital_infra_index+ln_hc|entity FE",           description: "Digital infra sub-index replaces AI index."}
+  - {filename: "tables/innovation_fe.txt",           group: A, type: model_summary, suite: falsification, model_key: innovation_fe,            order: 8,  producer: run_falsification_suite, n_obs: 1832, sha256: "dceb5d0c7a91dc3a66f4504810ecb4ef71933e767a7220caa1265584a91a836d", spec: "ln_tfp~innovation_index+ln_hc|entity FE",              description: "Innovation sub-index (patents+IP) replaces AI index."}
+  - {filename: "tables/reverse_causality_fe.txt",   group: A, type: model_summary, suite: falsification, model_key: reverse_causality_fe,     order: 8,  producer: run_falsification_suite, n_obs: 1452, sha256: "9111f61045cd568d7cc8c62c62ba975f5db31c7de2dcb6d9691a94d1e19d390e", spec: "ln_ai~ln_tfp_l1|entity FE",                            description: "Reverse causality: AI regressed on lagged TFP."}
+  - {filename: "tables/coverage_restricted_fe.txt", group: A, type: model_summary, suite: falsification, model_key: coverage_restricted_fe,   order: 8,  producer: run_falsification_suite, n_obs: 1433, sha256: "739df8fe0e72d00664f4cee7e279a7a6850a45dc1045228dd47116cfe4d257fd", spec: "ln_tfp~ln_ai+ln_hc|entity FE|>=8 AI obs per country",  description: "Coverage-restricted sample. Tests selectivity bias."}
+
+  # GROUP A -- heterogeneity suite model summaries (NOT in run_pipeline.py -- ANOM-05)
+  - {filename: "tables/pre_2020_fe.txt",             group: A, type: model_summary, suite: heterogeneity, model_key: pre_2020_fe,             order: 9,  producer: run_heterogeneity_suite, sha256: "c83f856c0faeb148e5568046d3a9c5c8eb60a75093146634a571834c8bad9017", spec: "ln_tfp~ln_ai+ln_hc|entity+time FE|year<2020",           description: "Pre-COVID subsample 2010-2019.", anomaly: ANOM-05}
+  - {filename: "tables/post_2020_fe.txt",            group: A, type: model_summary, suite: heterogeneity, model_key: post_2020_fe,            order: 9,  producer: run_heterogeneity_suite, sha256: "260c45aced087d96354724f36ebe05bfc860d62da7e4a693464663ca455dadc4", spec: "ln_tfp~ln_ai+ln_hc|entity+time FE|year>=2020",          description: "COVID + GenAI era 2020-2024.", anomaly: ANOM-05}
+  - {filename: "tables/covid_interact_fe.txt",       group: A, type: model_summary, suite: heterogeneity, model_key: covid_interact_fe,       order: 9,  producer: run_heterogeneity_suite, sha256: "182e1a0edd0d6028087b0878f51408068823011722202a1d729b760b92d10452",  spec: "ln_tfp~ln_ai+ln_ai*covid+ln_hc+covid|entity+time FE",  description: "AI x COVID interaction.", anomaly: ANOM-05}
+  - {filename: "tables/post_chatgpt_fe.txt",         group: A, type: model_summary, suite: heterogeneity, model_key: post_chatgpt_fe,         order: 9,  producer: run_heterogeneity_suite, sha256: "43b677080ee022a9d5b3c19b7eae51c308de05cddaa519181cc9f865af8b289b", spec: "ln_tfp~ln_ai+ln_hc|entity FE|year>=2023",              description: "Post-ChatGPT 2023-2024. Entity FE only.", anomaly: ANOM-05}
+  - {filename: "tables/no_covid_fe.txt",             group: A, type: model_summary, suite: heterogeneity, model_key: no_covid_fe,             order: 9,  producer: run_heterogeneity_suite, sha256: "161076d143da886716b691fa18f1e66da629967004828743fb5912aa1a524f61", spec: "ln_tfp~ln_ai+ln_hc|entity+time FE|drop 2020-2021",     description: "Drops pandemic years. Cleaner pre/post GenAI.", anomaly: ANOM-05}
+  - {filename: "tables/solow_excl_fe.txt",           group: A, type: model_summary, suite: heterogeneity, model_key: solow_excl_fe,           order: 9,  producer: run_heterogeneity_suite, sha256: "891ce892fb23d1122293d849ae583fe2515cb9447e1eadf2b528b7fd94d42bf7", spec: "ln_tfp~ln_ai+ln_hc|entity+time FE|tfp_solow_flag==0",  description: "Solow-excluded. IDENTICAL to pwt_only_fe.txt (ANOM-01).", anomaly: [ANOM-01, ANOM-05]}
+  - {filename: "tables/ai_hc_interact_fe.txt",       group: A, type: model_summary, suite: heterogeneity, model_key: ai_hc_interact_fe,       order: 9,  producer: run_heterogeneity_suite, sha256: "b221d9599cdcce4eb685cf723ac065fcbb10c1cdb0edafd8b08625daf26f9a1a", spec: "ln_tfp~ln_ai+ln_hc+ln_ai*ln_hc|entity+time FE",        description: "AI x HC interaction. Tests AI-complementarity hypothesis.", anomaly: ANOM-05}
+
+  # GROUP A -- summary tables (CSV + LaTeX)
+  - {filename: "tables/robustness_summary.csv",          group: A, type: summary_table,       suite: robustness,    order: 10, producer: _save_robustness_table,      sha256: "da8f11dc4a7bbd6235d60485ac0f045c7620a46844d321f93d2917752a609d7f", description: "ai_coef/se/pvalue/n_obs/r2 for 8 robustness+sensitivity models."}
+  - {filename: "tables/robustness_summary.tex",          group: A, type: summary_table_latex, suite: robustness,    order: 10, producer: _save_robustness_table,      sha256: "be71901f908f4828ff05096d44a49363d275edec85873f1c2e1d507f2a421f3f", description: "LaTeX tabular matching robustness_summary.csv."}
+  - {filename: "tables/sensitivity_summary.csv",         group: A, type: summary_table,       suite: sensitivity,   order: 11, producer: _save_sensitivity_table,     sha256: "493999c576465380a76eea4543e6e0e700961bb7af81c42499076d69642508be", description: "4-model subset: lagged, time_cluster, placebo, driscoll_kraay."}
+  - {filename: "tables/sensitivity_summary.tex",         group: A, type: summary_table_latex, suite: sensitivity,   order: 11, producer: _save_sensitivity_table,     sha256: "95fdba79996469ad6f318d9616c97d0d0e6c8c65bc98fd54198a53ddca0ac195", description: "LaTeX tabular matching sensitivity_summary.csv."}
+  - {filename: "tables/falsification_summary.csv",       group: A, type: summary_table,       suite: falsification, order: 12, producer: _save_falsification_table,   sha256: "74fa315c75a7edc4c072d9db6cba6a19fa06127508d2db025534cebba73d10d7", description: "4 falsification models with per-model key parameter names."}
+  - {filename: "tables/falsification_summary.tex",       group: A, type: summary_table_latex, suite: falsification, order: 12, producer: _save_falsification_table,   sha256: "43e2a929feddd554c27ac113549611adc42bf737e5ee48b2843bc6128a18baed", description: "LaTeX tabular matching falsification_summary.csv."}
+  - {filename: "tables/heterogeneity_summary.csv",       group: A, type: summary_table,       suite: heterogeneity, order: 13, producer: _save_heterogeneity_table,   sha256: "77bb4b297620638a1a679c4bc0e96213345ee0259be6314f5c24b95dce8bbc81", description: "7 heterogeneity models. Not in run_pipeline.py (ANOM-05).", anomaly: ANOM-05}
+  - {filename: "tables/heterogeneity_summary.tex",       group: A, type: summary_table_latex, suite: heterogeneity, order: 13, producer: _save_heterogeneity_table,   sha256: "e6b3587906e599a464cbee5f86024996ba20ce09c98a1402d88ad0d159f54cbe", description: "LaTeX tabular matching heterogeneity_summary.csv.", anomaly: ANOM-05}
+  - {filename: "tables/sample_selection_comparison.csv", group: A, type: summary_table,                             order: 14, producer: sample_selection_summary,    sha256: "f85430b0935ca8dfba15fd1afa157300a401e9f25731da1b20241e9d69cbfe44", description: "In-sample vs out-of-sample comparison on observables."}
+  - {filename: "tables/sample_selection_comparison.tex", group: A, type: summary_table_latex,                       order: 14, producer: _save_sample_selection_table,sha256: "a6c0f16a1701bf6eb56b817f0c7f4a4520c478366c1470f7c818add7011177d7", description: "LaTeX tabular for sample_selection_comparison.csv."}
+  - {filename: "tables/data_validation_report.json",     group: A, type: validation_report,                         order:  1, producer: "validate_data+save_validation_report", sha256: "409545e2ee2a083d96bda7e1c6ad28d19ec3ff1cadf5a41754ae7721339b8dfc", description: "JSON: missing cols, duplicate rows, non-finite log vars, coverage."}
+
+  # GROUP A -- figures
+  - {filename: "figures/ai_tfp_scatter.png",      group: A, type: figure, format: png, order: 15, producer: ai_tfp_scatter,            sha256: "863965ed25fb1d5d424062f58dba7701bca5a870a19b49066b03e797d5bec9cd", description: "Scatter: log AI vs log TFP with OLS fit and 95% CI band."}
+  - {filename: "figures/ai_tfp_scatter.pdf",      group: A, type: figure, format: pdf, order: 15, producer: ai_tfp_scatter,            sha256: "2448fd1385e323d042ad528995398973c149b6103605901d5aea5255e6deb24c", description: "PDF companion for LaTeX includegraphics."}
+  - {filename: "figures/ai_tfp_trend.png",        group: A, type: figure, format: png, order: 16, producer: ai_tfp_trend,              sha256: "8b9b8556b59909d8a50a174ab0492b84733ac360585d3d11a01a2383f6c05ce9", description: "Dual-axis time series: mean log AI + mean log TFP by year.", anomaly: ANOM-04}
+  - {filename: "figures/ai_tfp_trend.pdf",        group: A, type: figure, format: pdf, order: 16, producer: ai_tfp_trend,              sha256: "fdb73a879b65d01bc1583bb37d3808bb7a2026437a3eb2420beafeffa2994058", description: "PDF companion. Not produced by scripts/06_figures.py.", anomaly: ANOM-04}
+  - {filename: "figures/ai_coef_comparison.png",  group: A, type: figure, format: png, order: 17, producer: ai_coefficient_comparison, sha256: "38e3e2b3742d032a7acd52e4337405de6515462e6ef67cd823014cc44d402621", description: "Forest plot: AI coef +/- 95% CI across 8 robustness+sensitivity models."}
+  - {filename: "figures/ai_coef_comparison.pdf",  group: A, type: figure, format: pdf, order: 17, producer: ai_coefficient_comparison, sha256: "e98176d09f6246eb44a31963d8332bec7a21760ddca9e171142d50296cede395", description: "PDF companion."}
+  - {filename: "figures/missingness_profile.png", group: A, type: figure, format: png, order: 18, producer: missingness_profile,       sha256: "20f6c2a161e307c36b35631fcffcfef1de31b857db66ac9853cea61fe2b1c75d", description: "Bar chart: top variables by missing observation count."}
+  - {filename: "figures/missingness_profile.pdf", group: A, type: figure, format: pdf, order: 18, producer: missingness_profile,       sha256: "7c5ff8b9848a78fdc2734a26ca394291a4c48bb442e6ae58f57291abf71966cb", description: "PDF companion."}
+
+  # GROUP A -- auto-generated LaTeX narratives
+  - {filename: "paper_sections/results_auto.tex",      group: A, type: narrative_latex, order: 19, producer: write_results,                sha256: "fe949a1928a95ad045b381e5f47c19d8c49b79f15a2292a892d24429fd43db55", description: "Auto-generated results paragraph. Embeds live coefficients."}
+  - {filename: "paper_sections/falsification_auto.tex",group: A, type: narrative_latex, order: 20, producer: write_falsification_results, sha256: "ff828cffdd1bb14650c7d9a70a6756d25edeea3720e45f490016957924fd5b60", description: "Auto-generated falsification paragraph with n_obs and coefficients."}
+
+  # GROUP B -- script-produced (not reproducible from current data)
+  - {filename: "tables/tfp_regression.txt",  group: B, type: model_summary,        producer_script: "scripts/04_regressions.py", produced_date: "2026-03-11", sha256: "93673bd230d9d5c9f6e2d550781e532604ff2cc87bf1d3ad225df1b4cae4dccd", n_obs: 364, n_entities: 61, description: "Early-vintage baseline FE on OLD dataset. NOT reproducible from current data.", anomaly: ANOM-02}
+  - {filename: "tables/summary_stats.tex",   group: B, type: descriptive_statistics, producer_script: "scripts/07_tables.py",      produced_date: "2026-03-11", sha256: "df98cce4de34eb84820c4c320a0d3832e2291868163ef7aa4ceed1cced499245", description: "Describe() on old dataset state. NOT reproducible from current data.", anomaly: ANOM-03}
+
+  # GROUP C -- intermediate data
+  - {filename: "data/panel_clean.csv", group: C, type: intermediate_data, producer_script: "scripts/03_build_panel.py / scripts/05c_extend_panel.py", rows: 2895, columns: 32, countries: 193, years: "2010-2024", sha256: "9a65183a5406c76be2ba840faacbef673aa1b09604a1d61b8fe29c34415ebe44", description: "Single input to src/ai_productivity/pipeline.py run(). All Group A artifacts are fully determined by this file + random_seed=42."}

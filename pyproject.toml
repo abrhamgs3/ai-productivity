@@ -29,6 +29,9 @@ dev = [
     "pytest-cov>=5.0",
     "ruff>=0.4",
 ]
+app = [
+    "streamlit>=1.35",
+]
 ai = [
     "openai>=1.0",
     "langchain>=0.2",
@@ -42,7 +45,8 @@ packages = ["src/ai_productivity"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-v --tb=short"
+addopts = "-v --tb=short --import-mode=importlib"
+pythonpath = ["src"]
 
 [tool.ruff]
 src = ["src"]

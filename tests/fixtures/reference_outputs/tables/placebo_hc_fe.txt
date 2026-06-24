@@ -1,0 +1,32 @@
+                          PanelOLS Estimation Summary                           
+================================================================================
+Dep. Variable:                  ln_hc   R-squared:                        0.0003
+Estimator:                   PanelOLS   R-squared (Between):             -0.0405
+No. Observations:                1552   R-squared (Within):              -0.0166
+Date:                Sun, Jun 21 2026   R-squared (Overall):              0.0013
+Time:                        20:45:17   Log-likelihood                    3350.8
+Cov. Estimator:             Clustered                                           
+                                        F-statistic:                      0.4635
+Entities:                         127   P-value                           0.4961
+Avg Obs:                       12.220   Distribution:                  F(1,1410)
+Min Obs:                       1.0000                                           
+Max Obs:                       15.000   F-statistic (robust):             0.0807
+                                        P-value                           0.7765
+Time periods:                      15   Distribution:                  F(1,1410)
+Avg Obs:                       103.47                                           
+Min Obs:                       63.000                                           
+Max Obs:                       115.00                                           
+                                                                                
+                             Parameter Estimates                              
+==============================================================================
+            Parameter  Std. Err.     T-stat    P-value    Lower CI    Upper CI
+------------------------------------------------------------------------------
+const          1.0397     0.0051     202.76     0.0000      1.0296      1.0497
+ln_ai          0.0003     0.0010     0.2840     0.7765     -0.0017      0.0023
+==============================================================================
+
+F-test for Poolability: 651.62
+P-value: 0.0000
+Distribution: F(140,1410)
+
+Included effects: Entity, Time

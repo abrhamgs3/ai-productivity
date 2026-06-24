@@ -1,0 +1,58 @@
+{
+  "path": "data/processed/panel_clean.csv",
+  "required_columns": [
+    "country",
+    "year",
+    "ln_ai",
+    "ln_tfp",
+    "ln_hc",
+    "ln_gdp"
+  ],
+  "missing_columns": [],
+  "duplicate_country_year": 0,
+  "missing_by_column": {
+    "country": 0,
+    "year": 0,
+    "gdp_pc": 69,
+    "population": 0,
+    "internet_users": 276,
+    "mobile_subs": 256,
+    "rule_law": 207,
+    "gov_effect": 207,
+    "reg_quality": 207,
+    "tfp": 842,
+    "hc": 825,
+    "capital_stock": 465,
+    "pat_res": 1546,
+    "pat_nres": 1445,
+    "ip_receipts": 790,
+    "ai_proxy_total": 1,
+    "secure_servers": 31,
+    "electricity_access": 193,
+    "AI_index": 1611,
+    "ln_gdp": 69,
+    "ln_ai": 997,
+    "ln_tfp": 842,
+    "ln_hc": 825,
+    "digital_infra_index": 2,
+    "innovation_index": 561,
+    "tfp_solow_flag": 0,
+    "ai_proxy_reconstructed_flag": 0,
+    "hc_extrapolated_flag": 0,
+    "covid_dummy": 0,
+    "post_chatgpt": 0,
+    "post_2020": 0,
+    "ai_reconstructed_flag": 0
+  },
+  "log_vars_non_finite": {
+    "ln_ai": 997,
+    "ln_tfp": 842,
+    "ln_hc": 825,
+    "ln_gdp": 69
+  },
+  "coverage": {
+    "countries": 193,
+    "years": 15,
+    "rows": 2895
+  }
+}

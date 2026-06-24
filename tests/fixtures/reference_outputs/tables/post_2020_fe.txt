@@ -1,0 +1,33 @@
+                          PanelOLS Estimation Summary                           
+================================================================================
+Dep. Variable:                 ln_tfp   R-squared:                        0.0215
+Estimator:                   PanelOLS   R-squared (Between):             -0.1391
+No. Observations:                 492   R-squared (Within):              -0.1258
+Date:                Sun, Jun 21 2026   R-squared (Overall):             -0.1457
+Time:                        20:45:17   Log-likelihood                    985.90
+Cov. Estimator:             Clustered                                           
+                                        F-statistic:                      4.0469
+Entities:                         118   P-value                           0.0183
+Avg Obs:                       4.1695   Distribution:                   F(2,368)
+Min Obs:                       1.0000                                           
+Max Obs:                       5.0000   F-statistic (robust):             1.1571
+                                        P-value                           0.3156
+Time periods:                       5   Distribution:                   F(2,368)
+Avg Obs:                       98.400                                           
+Min Obs:                       63.000                                           
+Max Obs:                       114.00                                           
+                                                                                
+                             Parameter Estimates                              
+==============================================================================
+            Parameter  Std. Err.     T-stat    P-value    Lower CI    Upper CI
+------------------------------------------------------------------------------
+const         -0.2444     0.6629    -0.3686     0.7126     -1.5480      1.0593
+ln_ai          0.0024     0.0016     1.5204     0.1293     -0.0007      0.0055
+ln_hc          0.2438     0.6050     0.4030     0.6872     -0.9458      1.4335
+==============================================================================
+
+F-test for Poolability: 37.343
+P-value: 0.0000
+Distribution: F(121,368)
+
+Included effects: Entity, Time

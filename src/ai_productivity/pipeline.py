@@ -33,6 +33,7 @@ from ai_productivity.econometrics import (
     run_robustness_suite,
     run_sensitivity_suite,
     run_falsification_suite,
+    run_heterogeneity_suite,
 )
 from ai_productivity.visualization import (
     ai_tfp_scatter,
@@ -147,6 +148,31 @@ def _save_falsification_table(results: dict, out_dir: Path) -> None:
     log.info("Falsification table written")
 
 
+_HETEROGENEITY_PARAMS = {
+    "pre_2020_fe":        "ln_ai",
+    "post_2020_fe":       "ln_ai",
+    "covid_interact_fe":  "ln_ai",
+    "post_chatgpt_fe":    "ln_ai",
+    "no_covid_fe":        "ln_ai",
+    "solow_excl_fe":      "ln_ai",
+    "ai_hc_interact_fe":  "ln_ai",
+}
+
+
+def _save_heterogeneity_table(results: dict, out_dir: Path) -> None:
+    rows = [
+        _model_row(name, res, _HETEROGENEITY_PARAMS.get(name, "ln_ai"))
+        for name, res in results.items()
+        if res is not None
+    ]
+    if not rows:
+        return
+    df = pd.DataFrame(rows).sort_values("model").reset_index(drop=True)
+    df.to_csv(out_dir / "heterogeneity_summary.csv", index=False)
+    _write_latex_table(df, out_dir / "heterogeneity_summary.tex")
+    log.info("Heterogeneity table written")
+
+
 def _save_sample_selection_table(summary_df: pd.DataFrame, out_dir: Path) -> None:
     summary_df.to_csv(out_dir / "sample_selection_comparison.csv", index=False)
     lines = [
@@ -215,14 +241,17 @@ def run(
     robustness     = run_robustness_suite(df)
     sensitivity    = run_sensitivity_suite(df)
     falsification  = run_falsification_suite(df)
+    heterogeneity  = run_heterogeneity_suite(df)
     all_results    = {**robustness, **sensitivity}
 
     # 4. Tables
     _save_model_summaries(all_results, tables_dir)
     _save_model_summaries(falsification, tables_dir)
+    _save_model_summaries(heterogeneity, tables_dir)
     _save_robustness_table(all_results, tables_dir)
     _save_sensitivity_table(all_results, tables_dir)
     _save_falsification_table(falsification, tables_dir)
+    _save_heterogeneity_table(heterogeneity, tables_dir)
 
     selection_summary = sample_selection_summary(df)
     _save_sample_selection_table(selection_summary, tables_dir)

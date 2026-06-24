@@ -1,0 +1,33 @@
+                          PanelOLS Estimation Summary                           
+================================================================================
+Dep. Variable:             gdp_growth   R-squared:                        0.0021
+Estimator:                   PanelOLS   R-squared (Between):             -0.1651
+No. Observations:                1459   R-squared (Within):               0.0021
+Date:                Sun, Jun 21 2026   R-squared (Overall):             -0.0258
+Time:                        20:45:17   Log-likelihood                    2597.0
+Cov. Estimator:             Clustered                                           
+                                        F-statistic:                      1.4171
+Entities:                         127   P-value                           0.2428
+Avg Obs:                       11.488   Distribution:                  F(2,1330)
+Min Obs:                       1.0000                                           
+Max Obs:                       14.000   F-statistic (robust):             2.5084
+                                        P-value                           0.0818
+Time periods:                      14   Distribution:                  F(2,1330)
+Avg Obs:                       104.21                                           
+Min Obs:                       63.000                                           
+Max Obs:                       115.00                                           
+                                                                                
+                             Parameter Estimates                              
+==============================================================================
+            Parameter  Std. Err.     T-stat    P-value    Lower CI    Upper CI
+------------------------------------------------------------------------------
+const          0.0562     0.0230     2.4406     0.0148      0.0110      0.1014
+ln_ai         -0.0006     0.0003    -1.9678     0.0493     -0.0013  -1.956e-06
+ln_hc         -0.0345     0.0216    -1.5947     0.1110     -0.0768      0.0079
+==============================================================================
+
+F-test for Poolability: 2.9489
+P-value: 0.0000
+Distribution: F(126,1330)
+
+Included effects: Entity

@@ -114,3 +114,25 @@ desktop.ini
 .env
 .env.*
 secrets.yaml
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Demo data (small, synthetic — tracked)
+!data/demo/
+!data/demo/*.csv
+
+# ============================================================
+# Root-level generated / version-stamped files
+# ============================================================
+# Word document version copies (keep paper/ tracked, not root copies)
+AI_and_Productivity_v*.docx
+
+# Referee report version copies
+Referee_Reports_v*.md
+
+# Root-level scaffold directory (legacy, superseded by src/ai_productivity/)
+/ai_productivity/
+
+# IDE / tool working dirs at root
+/projects/
